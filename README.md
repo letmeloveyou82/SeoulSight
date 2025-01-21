@@ -23,7 +23,6 @@
 
 ## 아키텍처
 <br>
-![Image](https://github.com/user-attachments/assets/64573a79-e24e-409f-a2bc-f8f370bce6e3)
-
+![이미지](https://github.com/user-attachments/assets/64573a79-e24e-409f-a2bc-f8f370bce6e3)
 ---
 ## 시각화 데이터
