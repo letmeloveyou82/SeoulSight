@@ -216,6 +216,11 @@ MySQL 데이터베이스의 place 테이블 데이터를 주기적으로 가져�
 ![Image](https://github.com/user-attachments/assets/02daa261-b4dc-4432-be53-b753046a5fe0)
 ![Image](https://github.com/user-attachments/assets/5ca7625b-fa3f-4210-b484-4cccfcffbede)
 
+<br>
+
+---
+
+<br>
 
 ## 📊 Kibana 시각화
 <table>
