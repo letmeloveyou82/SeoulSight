@@ -104,7 +104,7 @@ Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io
 ```
 ![Image](https://github.com/user-attachments/assets/ac747e92-2754-4d2b-b851-6a7a8c508067)
 
-### 해결 과정
+### 해결 방법
 파일 수정 - logstash 하단의 jvm.options 파일 수정
 ```
 -Xmx1g 밑 부분에
@@ -123,7 +123,7 @@ Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io
 추가합니다.
 ```
 
-### 해결
+### 결과
 FilenoUtil에 대한 Openacess 권한 문제에 대한 내용이 해결되어 나타나지 않습니다.
 ![Image](https://github.com/user-attachments/assets/1960d0b2-0dbd-462b-9f98-546ce40e0147)
 ```
