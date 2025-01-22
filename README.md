@@ -22,8 +22,7 @@
   - 
 
 ## 아키텍처
-![Image](https://github.com/user-attachments/assets/1cd56f53-516a-4522-8d4a-e54e303e8c9a)
-
+![Image](https://github.com/user-attachments/assets/52c258f3-f856-476a-9e4e-cdaf404212ee)
 
 ## 사용한 필드 설명
 
