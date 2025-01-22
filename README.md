@@ -85,6 +85,78 @@
 </table>
 
 
+## 데이터 파싱
+
+#### 1. XML형식 데이터 파싱
+제공받은 API의 데이터 형식이 XML이었기 때문에, 필요한 정보만 추출하여 딕셔너리 형태로 반환하였습니다.
+```
+def fetch_and_parse_api_data(api_key, area_name):
+    url = f'http://openapi.seoul.go.kr:8088/{api_key}/xml/citydata/1/5/{area_name}'
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        root = ET.fromstring(response.content)
+        data = {
+            "area_nm": root.findtext('.//AREA_NM', default=''),
+            "area_cd": root.findtext('.//AREA_CD', default=''),
+           ...
+            "warn_msg": root.findtext('.//WARN_MSG', default='')
+        }
+        
+        
+        return data
+    else:
+        print(f"Failed to fetch data: {response.status_code}")
+        return None
+```
+
+#### 2. mysql insert
+10분마다 최신 데이터를 MySQL 데이터베이스에 업데이트하여 최신 정보를 유지합니다.
+해당 데이터가 이미 데이터베이스에 존재하는지 확인하고, 존재하면 갱신하고, 없으면 새로 삽입합니다.
+```
+def upsert_data_into_mysql(data, db_config, table_name):
+    connection = pymysql.connect(**db_config)
+    try:
+        with connection.cursor() as cursor:
+            # Check if area_cd already exists
+            select_sql = f"SELECT COUNT(*) FROM {table_name} WHERE area_cd = %s"
+            cursor.execute(select_sql, (data["area_cd"],))
+            result = cursor.fetchone()
+
+            if result[0] > 0:  # area_cd exists, perform UPDATE
+                update_columns = ", ".join([f"{key} = %s" for key in data.keys()])
+                update_sql = f"UPDATE {table_name} SET {update_columns} WHERE area_cd = %s"
+                cursor.execute(update_sql, list(data.values()) + [data["area_cd"]])
+                print(f"Data for {data['area_cd']} has been updated.")
+            else:  # area_cd does not exist, perform INSERT
+                columns = ", ".join(data.keys())
+                placeholders = ", ".join(["%s"] * len(data))
+                insert_sql = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
+                cursor.execute(insert_sql, list(data.values()))
+                print(f"Data for {data['area_cd']} has been inserted into the database.")
+
+            connection.commit()
+
+    except Exception as e:
+        print(f"MySQL error: {e}")
+    finally:
+        connection.close()
+
+
+if __name__ == "__main__":
+  while True:
+          # Fetch and insert or update data for each area
+          for area in areas:
+              parsed_data = fetch_and_parse_api_data(API_KEY, area)
+              if parsed_data:
+                  upsert_data_into_mysql(parsed_data, DB_CONFIG, TABLE_NAME)
+          
+          print("Waiting for 10 minutes before the next fetch...")
+          time.sleep(600)  # 600 seconds = 10 minutes
+```
+
+
+
 ## 트러블 슈팅
 주제 : 운영체제에 설치된 JDK-17로 Logstash 구동하기
 
