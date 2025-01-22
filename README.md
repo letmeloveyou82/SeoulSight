@@ -204,48 +204,86 @@ if __name__ == "__main__":
 
 
 ## 트러블 슈팅
-주제 : 운영체제에 설치된 JDK-17로 Logstash 구동하기
+### Logstash 실행 문제 해결
 
-문제 : Logstash가 서브 프로세스들을 관리하기 위하여 JDK의 IO 서브 시스템에 대하여 open access권한을 요청하지만 JDK 버전의 문제로 IO 서브 시스템에 대한 접근이 제한되어 문제가 발생
+#### 주제: 운영체제에 설치된 JDK-17로 Logstash 구동하기
 
-### JDK 16에서의 변화
-출처 : https://blogs.oracle.com/javakr/post/jdk-16
+### 문제 설명
 
-JEP 396: JDK 내부를 강력하게 캡슐화  - JDK 9에서 내부 API를 강력하게 캡슐화하여 액세스 권한을 제한
-이로 인하여 open access권한이 제한됩니다. 이를 해결해주어야 Warning에 대한 문제가 사라집니다.
+Logstash가 서브 프로세스들을 관리하기 위해 JDK의 IO 서브 시스템에 대해 open access 권한을 요청하지만, **JDK 버전**의 문제로 IO 서브 시스템에 대한 접근이 제한되어 문제가 발생합니다.
+
+### 오류 메시지:
 
 ```
 WARNING, using JAVA_HOME while Logstash distribution comes with a bundled JDK
 2025-01-21T17:34:36.483+09:00 [main] WARN FilenoUtil : Native subprocess control requires open access to the JDK IO subsystem
 Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED' to enable.
 ```
-![Image](https://github.com/user-attachments/assets/ac747e92-2754-4d2b-b851-6a7a8c508067)
+---
 
+### JDK 9 ~ JDK 17까지의 모듈 시스템 변화
+
+#### JDK 9
+
+- **모듈 시스템 도입**: Java Reflection API를 통해 비공개(private) 클래스 멤버들에 대한 접근이 가능하던 부분을 제한.
+- **목표**: 보안성과 유지보수성을 강화하기 위해 내부 요소들에 대한 접근을 제한.
+- **완화된 강력한 캡슐화**: JDK 9에서는 JDK 8의 `java.*`나 `sun.*` 패키지에 대해서 리플렉션을 통한 접근을 허용.
+    
+    #### 리플렉션이란?
+    
+    - 리플렉션은 **런타임에 클래스, 메소드, 필드, 생성자 등의 정보를 조사하거나 조작할 수 있도록 하는 기능**입니다.
+    - 주로 **컴파일 시점에는 알 수 없는 객체의 정보를 런타임에 동적으로 분석하거나 수정**할 때 사용됩니다.
+
+#### JDK 16
+
+- **강력한 캡슐화**: JEP 396을 통해 기본적으로 JDK 내부 패키지에 대한 접근을 차단.
+- `-illegal-access` 명령어 옵션의 기본값이 `deny`로 변경되었으며, 특정 패키지에 대한 전체 접근을 `-add-opens` 옵션으로 명시적으로 허용 가능.
+
+#### JDK 17
+
+- **JEP 403 적용**: JDK 내부 요소들에 대한 접근을 완전히 차단.
+- `-illegal-access` 옵션 제거.
+- `-add-opens`를 사용하여 특정 패키지에 대한 전체 접근 불가능
+    - `-add-opens`를 사용하여 특정 패키지 내의 서브 패키지들에 대해 접근을 허용해야 함.
+
+---
 ### 해결 방법
-파일 수정 - logstash 하단의 jvm.options 파일 수정
-```
--Xmx1g 밑 부분에
---add-opens java.base/sun.nio.ch=ALL-UNNAMED
---add-opens java.base/java.io=ALL-UNNAMED
-를 추가해줍니다.
 
-첫번째 명령어는 module-info.java가 없는 모든 unnamed 모듈에서 JDK의 기본 모듈에서
-저수준 I/O관련 클래스들을 포함하고 있는 JAVA NIO 내부 구현과 관련된 패키지에 접근을 
-가능하게 해줍니다.
-두번째 명령어는 java.io패키지에 모든 unnamed 모듈이 접근 가능하도록 해줍니다.
+1. **Logstash 실행 시 JVM 옵션 설정**
+    
+    **jvm.options 파일**에서 JVM 옵션을 설정합니다.
+    
+    - `Xmx1g` 설정 아래에 다음 옵션을 추가합니다:
+    
+    ```
+    --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+    --add-opens java.base/java.io=ALL-UNNAMED
+    ```
 
-또한 ## GC configuration 밑 부분에 
--XX:+IgnoreUnrecognizedVMOptions
-를 추가하여 혹여나 JVM 버전 차이로 인하여 인식하지 못하는 명령이 있을 경우 무시하는 옵션을
-추가합니다.
-```
+    - `-add-opens java.base/sun.nio.ch=ALL-UNNAMED`: `sun.nio.ch` 패키지에 모든 `unnamed` 모듈에서 접근을 허용합니다. 이는 저수준 I/O 관련 클래스를 포함하고 있습니다.
+    - `-add-opens java.base/java.io=ALL-UNNAMED`: `java.io` 패키지에 모든 `unnamed` 모듈에서 접근을 허용합니다.
+2. **GC 설정 추가**
+    
+    `GC configuration` 섹션에 다음 옵션을 추가합니다:
+    
+    ```
+    -XX:+IgnoreUnrecognizedVMOptions
+    ```
+    
+    - 이 옵션은 JVM 버전 차이로 인해 일부 명령어가 인식되지 않을 경우 이를 무시하도록 설정합니다.
 
-### 결과
-FilenoUtil에 대한 Openacess 권한 문제에 대한 내용이 해결되어 나타나지 않습니다.
-![Image](https://github.com/user-attachments/assets/1960d0b2-0dbd-462b-9f98-546ce40e0147)
-```
-C:\02.devEnv\ELK\logstash-7.11.1\bin>logstash -f ../config/test.conf
-Using JAVA_HOME defined java: C:\02.devEnv\jdk-17
-WARNING, using JAVA_HOME while Logstash distribution comes with a bundled JDK
-Sending Logstash logs to C:/02.devEnv/ELK/logstash-7.11.1/logs which is now configured via log4j2.properties
-```
+---
+
+## 결과
+
+- `FilenoUtil`에 대한 Open Access 권한 문제 해결.
+- Logstash가 정상적으로 서브 프로세스를 제어하며 실행됩니다.
+![Image](https://github.com/user-attachments/assets/78c6bb2f-facd-4abb-b876-b381667f7e91)
+
+---
+
+## 참고 자료
+
+- [JEP 396: Strongly Encapsulate JDK Internals by Default](https://openjdk.org/jeps/396)
+- [JEP 403: Strong Encapsulation of JDK Internals](https://openjdk.org/jeps/403)
+- https://helloworld.kurly.com/blog/75-java-module-with-gson-serialization/
