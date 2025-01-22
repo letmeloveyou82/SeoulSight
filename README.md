@@ -17,12 +17,58 @@
 |:-:|:-:|:-:|:-:|
 |장수현<br/>[@Aunsxm](https://github.com/Aunsxm)|최윤정<br/>[@letmeloveyou82](https://github.com/letmeloveyou82)|김창성<br/>[@kcs19](https://github.com/kcs19)|김우현<br/>[@woody6624](https://github.com/woody6624)|
 
-## 기획
-- 사용할 데이터 소스
-  - 
+<br>
+
+---
+
+<br>
+
+## 🗒️기획
+
+이 프로젝트는 서울시의 실시간 도시 데이터를 활용하여 외국인 관광객들이 관광 특구(서울시에서 지정한 관광 명소)에 대한 정보를 쉽게 얻을 수 있도록 돕는 것을 목표로 합니다. 날씨, 인구 혼잡도, 연령대별 인구 비율 등의 데이터를 시각화하여 관광객들이 실시간 정보를 기반으로 여행을 더욱 효과적으로 계획할 수 있도록 지원합니다.
+### 목표
+
+1. **실시간 업데이트 제공**: 관광 특구의 날씨, 인구 혼잡도, 인구 특성 정보를 실시간으로 제공.
+2. **정보 접근성 향상**: 복잡한 데이터를 직관적으로 이해할 수 있도록 시각화.
+3. **관광 편의성 증대**: 실시간 및 예측 정보를 기반으로 효과적인 여행 계획 수립 지원.
+
+### 주요 기능
+
+1. **날씨 정보 제공**: 각 관광 특구의 실시간 날씨 정보를 제공하여 야외 활동 준비를 돕습니다.
+2. **인구 혼잡도 정보 제공**: 관광 특구의 인구 밀집도를 실시간으로 파악할 수 있도록 지원합니다.
+3. **연령대별 인구 비율 제공**: 관광 특구별 연령대 인구 비율을 시각화하여 다양한 연령층의 관심을 충족시킵니다.
+
+<br>
+
+---
+
+<br>
+
+## 👨‍💻기술스택
+
+| **역할**            | **종류**                                                                                                              |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------|
+| 🤝 협업 도구         | ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) <br> ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) |
+| 🗄️ 데이터베이스      | ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) <br> ![DBeaver](https://img.shields.io/badge/dbeaver-372923.svg?style=for-the-badge&logo=dbeaver&logoColor=white) |
+| 💬 커뮤니케이션 도구 | ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=for-the-badge&logo=notion&logoColor=white) <br> ![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white) |
+| 🛠️ 개발 및 관리 도구 | ![MobaXterm](https://img.shields.io/badge/mobaxterm-2C2E34.svg?style=for-the-badge&logo=mobaxterm&logoColor=white) <br> ![Elasticsearch](https://img.shields.io/badge/elasticsearch-%230377CC.svg?style=for-the-badge&logo=elasticsearch&logoColor=white)<br>![Logstash](https://img.shields.io/badge/Logstash-005571.svg?&style=for-the-badge&logo=Logstash&logoColor=white)|
+| :eyes: 시각화 도구 | ![Kibana](https://img.shields.io/badge/Kibana-E8478B.svg?&style=for-the-badge&logo=Kibana&logoColor=white)|
+
+<br>
+
+---
+
+<br>
+
 
 ## 아키텍처
 ![Image](https://github.com/user-attachments/assets/52c258f3-f856-476a-9e4e-cdaf404212ee)
+
+<br>
+
+---
+
+<br>
 
 ## 사용한 필드 설명
 
