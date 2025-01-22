@@ -110,7 +110,7 @@ def fetch_and_parse_api_data(api_key, area_name):
         return None
 ```
 
-#### 2. mysql insert
+#### 2. mysql 데이터 삽입
 10분마다 최신 데이터를 MySQL 데이터베이스에 업데이트하여 최신 정보를 유지합니다.
 해당 데이터가 이미 데이터베이스에 존재하는지 확인하고, 존재하면 갱신하고, 없으면 새로 삽입합니다.
 ```
