@@ -2,8 +2,14 @@
 <br>
 
 ## 목차
-1.[기획](#기획)
-
+1. [프로젝트 소개](#프로젝트-소개)
+2. [기술 스택](#기술-스택)
+3. [아키텍처](#아키텍처)
+4. [API 호출을 통해 사용한 필드 정리](#-api-호출을-통해-사용한-필드-정리)
+5. [데이터 파싱](#-데이터-파싱)
+6. [Logstash로 데이터 정제 & Elasticsearch 전송](#-logstash로-데이터-정제--elasticsearch-전송)
+7. [트러블 슈팅](#-트러블-슈팅)
+8. [회고](#회고)
 
 <br>
 
@@ -12,7 +18,7 @@
 <br>
 
 
-## MEMBERS
+## 🤝 팀원
 |<img src="https://avatars.githubusercontent.com/u/98368034?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/49242646?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/103468518?v=4" width="150" height="150"/>|<img src="https://avatars.githubusercontent.com/u/103871252?v=4" width="150" height="150"/>|
 |:-:|:-:|:-:|:-:|
 |장수현<br/>[@Aunsxm](https://github.com/Aunsxm)|최윤정<br/>[@letmeloveyou82](https://github.com/letmeloveyou82)|김창성<br/>[@kcs19](https://github.com/kcs19)|김우현<br/>[@woody6624](https://github.com/woody6624)|
@@ -23,20 +29,28 @@
 
 <br>
 
-## 🗒️기획
+## 🗒️ 프로젝트 소개
 
-이 프로젝트는 서울시의 실시간 도시 데이터를 활용하여 외국인 관광객들이 관광 특구(서울시에서 지정한 관광 명소)에 대한 정보를 쉽게 얻을 수 있도록 돕는 것을 목표로 합니다. 날씨, 인구 혼잡도, 연령대별 인구 비율 등의 데이터를 시각화하여 관광객들이 실시간 정보를 기반으로 여행을 더욱 효과적으로 계획할 수 있도록 지원합니다.
+이 프로젝트는 서울시의 실시간 도시 데이터를 활용하여 외국인 관광객들이 **관광 특구(서울시에서 지정한 관광 명소)** 에 대한 정보를 쉽게 얻을 수 있도록 돕는 것을 목표로 합니다.<br> 
+날씨, 인구 혼잡도, 연령대별 인구 비율 등의 데이터를 시각화하여 관광객들이 실시간 정보를 기반으로 여행을 더욱 효과적으로 계획할 수 있도록 지원합니다.
+
 ### 목표
 
 1. **실시간 업데이트 제공**: 관광 특구의 날씨, 인구 혼잡도, 인구 특성 정보를 실시간으로 제공.
+
 2. **정보 접근성 향상**: 복잡한 데이터를 직관적으로 이해할 수 있도록 시각화.
 3. **관광 편의성 증대**: 실시간 및 예측 정보를 기반으로 효과적인 여행 계획 수립 지원.
 
 ### 주요 기능
 
 1. **날씨 정보 제공**: 각 관광 특구의 실시간 날씨 정보를 제공하여 야외 활동 준비를 돕습니다.
+
 2. **인구 혼잡도 정보 제공**: 관광 특구의 인구 밀집도를 실시간으로 파악할 수 있도록 지원합니다.
 3. **연령대별 인구 비율 제공**: 관광 특구별 연령대 인구 비율을 시각화하여 다양한 연령층의 관심을 충족시킵니다.
+
+### **활용 데이터** 
+
+- [[서울 열린데이터 광장] 서울시 실시간 도시데이터](https://data.seoul.go.kr/dataList/OA-21285/A/1/datasetView.do)
 
 <br>
 
@@ -44,7 +58,7 @@
 
 <br>
 
-## 👨‍💻기술스택
+## 👨‍💻 기술 스택
 
 | **역할**            | **종류**                                                                                                              |
 |----------------------|-----------------------------------------------------------------------------------------------------------------------|
@@ -61,7 +75,7 @@
 <br>
 
 
-## 아키텍처
+## 🛠 아키텍처
 ![Image](https://github.com/user-attachments/assets/52c258f3-f856-476a-9e4e-cdaf404212ee)
 
 <br>
@@ -70,72 +84,59 @@
 
 <br>
 
-## 사용한 필드 설명
+## 🔎 API 호출을 통해 사용한 필드 정리
 
-| **필드명**          | **데이터 타입**      | **내용**                                                                 |
-|----------------------|----------------------|---------------------------------------------------------------------------|
-| `area_nm`           | `VARCHAR(255)`      | 지역 이름 (예: 광화문·덕수궁)                                             |
-| `area_cd`           | `VARCHAR(50)`       | 지역 코드 (예: POI009)                                                   |
-| `area_congest_lvl`  | `VARCHAR(50)`       | 혼잡 수준 (예: 약간 붐빔)                                                 |
-| `area_congest_msg`  | `TEXT`              | 혼잡 메시지                                                              |
-| `area_ppltn_min`    | `INT`               | 최소 인구 수 (예: 40000)                                                 |
-| `area_ppltn_max`    | `INT`               | 최대 인구 수 (예: 42000)                                                 |
-| `male_ppltn_rate`   | `FLOAT`             | 남성 인구 비율 (예: 50.8)                                                |
-| `female_ppltn_rate` | `FLOAT`             | 여성 인구 비율 (예: 49.2)                                                |
-| `ppltn_rate_0`      | `FLOAT`             | 0대 인구 비율 (예: 0.1)                                                  |
-| `ppltn_rate_10`     | `FLOAT`             | 10대 인구 비율 (예: 1.3)                                                 |
-| `ppltn_rate_20`     | `FLOAT`             | 20대 인구 비율 (예: 15.5)                                                |
-| `ppltn_rate_30`     | `FLOAT`             | 30대 인구 비율 (예: 27.6)                                                |
-| `ppltn_rate_40`     | `FLOAT`             | 40대 인구 비율 (예: 27.3)                                                |
-| `ppltn_rate_50`     | `FLOAT`             | 50대 인구 비율 (예: 17.3)                                                |
-| `ppltn_rate_60`     | `FLOAT`             | 60대 인구 비율 (예: 7.2)                                                 |
-| `ppltn_rate_70`     | `FLOAT`             | 70대 이상 인구 비율 (예: 3.7)                                            |
-| `temp`              | `FLOAT`             | 현재 온도 (예: 4.7)                                                      |
-| `sensible_temp`     | `FLOAT`             | 체감 온도 (예: 4.8)                                                      |
-| `wind_spd`          | `FLOAT`             | 풍속 (예: 2.8)                                                           |
-| `precipitation`     | `VARCHAR(50)`       | 강수량 (예: -)                                                           |
-| `pcp_msg`           | `TEXT`              | 강수 메시지 (예: 비 또는 눈 소식이 없어요.)                              |
-| `uv_index`          | `VARCHAR(50)`       | 자외선 지수 (예: 낮음)                                                   |
-| `uv_msg`            | `TEXT`              | 자외선 메시지                                                            |
-| `pm25_index`        | `VARCHAR(50)`       | PM2.5 지수 (예: 매우나쁨)                                                |
-| `pm25`              | `INT`               | PM2.5 농도 (예: 125)                                                     |
-| `pm10_index`        | `VARCHAR(50)`       | PM10 지수 (예: 나쁨)                                                     |
-| `pm10`              | `INT`               | PM10 농도 (예: 138)                                                      |
-| `air_idx`           | `VARCHAR(50)`       | 대기질 지수 (예: 점검중)                                                 |
-| `air_idx_mvl`       | `VARCHAR(50)`       | 대기질 이동 지수 (예: 점검중)                                            |
-| `air_msg`           | `TEXT`              | 대기질 메시지                                                            |
-| `weather_time`      | `DATETIME`          | 날씨 데이터 시간 (예: 2025-01-21 12:40)                                  |
-| `warn_val`          | `VARCHAR(50)`       | 경고 값 (예: 한파)                                                       |
-| `warn_stress`       | `VARCHAR(50)`       | 경고 수준 (예: 주의보)                                                   |
-| `announce_time`     | `INT`               | 발표 시간 (예: 0)                                                        |
-| `command`           | `VARCHAR(50)`       | 명령 상태 (예: 해제)                                                     |
-| `cancel_yn`         | `VARCHAR(50)`       | 취소 여부 (예: 정상)                                                     |
-| `warn_msg`          | `TEXT`              | 경고 메시지 (예: 해당 특보는 해제되었습니다.)                            |
+| **컬럼명**             | **설명**                     | **데이터 타입** | **제약 조건**      | **예시**                        |
+|-------------------------|------------------------------|-----------------|--------------------|----------------------------------|
+| `area_nm`              | 지역 이름                   | `VARCHAR(255)` | `NOT NULL`         | 광화문·덕수궁                    |
+| `area_cd`              | 지역 코드                   | `VARCHAR(50)`  | `NOT NULL`         | POI009                          |
+| `area_congest_lvl`     | 혼잡 수준                   | `VARCHAR(50)`  |                    | 약간 붐빔                        |
+| `area_congest_msg`     | 혼잡 메시지                 | `TEXT`         |                    | -                                |
+| `area_ppltn_min`       | 최소 인구 수                | `INT`          |                    | 40000                            |
+| `area_ppltn_max`       | 최대 인구 수                | `INT`          |                    | 42000                            |
+| `male_ppltn_rate`      | 남성 인구 비율              | `FLOAT`        |                    | 50.8                             |
+| `female_ppltn_rate`    | 여성 인구 비율              | `FLOAT`        |                    | 49.2                             |
+| `ppltn_rate_0`         | 0대 인구 비율               | `FLOAT`        |                    | 0.1                              |
+| `ppltn_rate_10`        | 10대 인구 비율              | `FLOAT`        |                    | 1.3                              |
+| `ppltn_rate_20`        | 20대 인구 비율              | `FLOAT`        |                    | 15.5                             |
+| `ppltn_rate_30`        | 30대 인구 비율              | `FLOAT`        |                    | 27.6                             |
+| `ppltn_rate_40`        | 40대 인구 비율              | `FLOAT`        |                    | 27.3                             |
+| `ppltn_rate_50`        | 50대 인구 비율              | `FLOAT`        |                    | 17.3                             |
+| `ppltn_rate_60`        | 60대 인구 비율              | `FLOAT`        |                    | 7.2                              |
+| `ppltn_rate_70`        | 70대 이상 인구 비율         | `FLOAT`        |                    | 3.7                              |
+| `temp`                 | 현재 온도                   | `FLOAT`        |                    | 4.7                              |
+| `sensible_temp`        | 체감 온도                   | `FLOAT`        |                    | 4.8                              |
+| `wind_spd`             | 풍속                        | `FLOAT`        |                    | 2.8                              |
+| `precipitation`        | 강수량                      | `VARCHAR(50)`  |                    | -                                |
+| `pcp_msg`              | 강수 메시지                 | `TEXT`         |                    | 비 또는 눈 소식이 없어요.         |
+| `uv_index`             | 자외선 지수                 | `VARCHAR(50)`  |                    | 낮음                             |
+| `uv_msg`               | 자외선 메시지               | `TEXT`         |                    | -                                |
+| `pm25_index`           | PM2.5 지수                 | `VARCHAR(50)`  |                    | 매우나쁨                         |
+| `pm25`                 | PM2.5 농도                 | `INT`          |                    | 125                              |
+| `pm10_index`           | PM10 지수                  | `VARCHAR(50)`  |                    | 나쁨                             |
+| `pm10`                 | PM10 농도                  | `INT`          |                    | 138                              |
+| `air_idx`              | 대기질 지수                 | `VARCHAR(50)`  |                    | 점검중                           |
+| `air_idx_mvl`          | 대기질 이동 지수            | `VARCHAR(50)`  |                    | 점검중                           |
+| `air_msg`              | 대기질 메시지               | `TEXT`         |                    | -                                |
+| `weather_time`         | 날씨 데이터 시간            | `DATETIME`     |                    | 2025-01-21 12:40                |
+| `warn_val`             | 경고 값                    | `VARCHAR(50)`  |                    | 한파                             |
+| `warn_stress`          | 경고 수준                  | `VARCHAR(50)`  |                    | 주의보                           |
+| `announce_time`        | 발표 시간                   | `INT`          |                    | 0                                |
+| `command`              | 명령 상태                  | `VARCHAR(50)`  |                    | 해제                             |
+| `cancel_yn`            | 취소 여부                  | `VARCHAR(50)`  |                    | 정상                             |
+| `warn_msg`             | 경고 메시지                 | `TEXT`         |                    | 해당 특보는 해제되었습니다.        |
+
+<br>
 
 ---
 
+<br>
 
-## 시각화 데이터
-<table>
-  <tr>
-    <td><img src="https://github.com/user-attachments/assets/1511ac5c-4690-41ea-9e25-1853b04565d4" alt="Image"></td>
-    <td><img src="https://github.com/user-attachments/assets/517c7b3c-8ef1-46a6-be71-3abf5b541cd9" alt="Image"></td>
-  </tr>
-  <tr>
-    <td><img src="https://github.com/user-attachments/assets/dd4c6edc-e142-44f8-bc24-bab4b061b561" alt="Image"></td>
-    <td><img src="https://github.com/user-attachments/assets/9c75434d-9613-4f00-b713-8c2d872d06f5" alt="Image"></td>
-  </tr>
-  <tr>
-    <td colspan="2"><img src="https://github.com/user-attachments/assets/c6b9a6a3-97d2-4772-85b6-3c3d34fba3ab" alt="Image"></td>
-  </tr>
-</table>
+## 💾 데이터 파싱
 
-
-## 데이터 파싱
-
-#### 1. XML형식 데이터 파싱
+### 1. XML형식 데이터 파싱
 제공받은 API의 데이터 형식이 XML이었기 때문에, 필요한 정보만 추출하여 딕셔너리 형태로 반환하였습니다.
-```
+```python
 def fetch_and_parse_api_data(api_key, area_name):
     url = f'http://openapi.seoul.go.kr:8088/{api_key}/xml/citydata/1/5/{area_name}'
     response = requests.get(url)
@@ -156,10 +157,10 @@ def fetch_and_parse_api_data(api_key, area_name):
         return None
 ```
 
-#### 2. mysql 데이터 삽입
+### 2. mysql 데이터 삽입
 10분마다 최신 데이터를 MySQL 데이터베이스에 업데이트하여 최신 정보를 유지합니다.
 해당 데이터가 이미 데이터베이스에 존재하는지 확인하고, 존재하면 갱신하고, 없으면 새로 삽입합니다.
-```
+```python
 def upsert_data_into_mysql(data, db_config, table_name):
     connection = pymysql.connect(**db_config)
     try:
@@ -200,10 +201,44 @@ if __name__ == "__main__":
           print("Waiting for 10 minutes before the next fetch...")
           time.sleep(600)  # 600 seconds = 10 minutes
 ```
+<br>
+
+---
+
+<br>
+
+## 🔄 Logstash로 데이터 정제 & Elasticsearch 전송
+MySQL 데이터베이스의 place 테이블 데이터를 주기적으로 가져와 필드 변환 및 정제를 수행합니다. 
+
+정제된 데이터를 Elasticsearch의 place_test 인덱스로 저장하며, 처리 결과를 Logstash 실행 창에 출력합니다.
+
+![Image](https://github.com/user-attachments/assets/fce00a28-b1b3-4d09-948c-d293ade88835)
+![Image](https://github.com/user-attachments/assets/02daa261-b4dc-4432-be53-b753046a5fe0)
+![Image](https://github.com/user-attachments/assets/5ca7625b-fa3f-4210-b484-4cccfcffbede)
 
 
+## 📊 Kibana 시각화
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/1511ac5c-4690-41ea-9e25-1853b04565d4" alt="Image"></td>
+    <td><img src="https://github.com/user-attachments/assets/517c7b3c-8ef1-46a6-be71-3abf5b541cd9" alt="Image"></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/dd4c6edc-e142-44f8-bc24-bab4b061b561" alt="Image"></td>
+    <td><img src="https://github.com/user-attachments/assets/9c75434d-9613-4f00-b713-8c2d872d06f5" alt="Image"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="https://github.com/user-attachments/assets/c6b9a6a3-97d2-4772-85b6-3c3d34fba3ab" alt="Image"></td>
+  </tr>
+</table>
 
-## 트러블 슈팅
+<br>
+
+---
+
+<br>
+
+## 💥 트러블 슈팅
 ### Logstash 실행 문제 해결
 
 #### 주제: 운영체제에 설치된 JDK-17로 Logstash 구동하기
@@ -247,7 +282,7 @@ Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io
     - `-add-opens`를 사용하여 특정 패키지 내의 서브 패키지들에 대해 접근을 허용해야 함.
 
 ---
-### 해결 방법
+### ✅ 해결 방법
 
 1. **Logstash 실행 시 JVM 옵션 설정**
     
@@ -274,7 +309,7 @@ Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io
 
 ---
 
-## 결과
+### 결과
 
 - `FilenoUtil`에 대한 Open Access 권한 문제 해결.
 - Logstash가 정상적으로 서브 프로세스를 제어하며 실행됩니다.
@@ -282,8 +317,16 @@ Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io
 
 ---
 
-## 참고 자료
+### 참고 자료
 
 - [JEP 396: Strongly Encapsulate JDK Internals by Default](https://openjdk.org/jeps/396)
 - [JEP 403: Strong Encapsulation of JDK Internals](https://openjdk.org/jeps/403)
 - https://helloworld.kurly.com/blog/75-java-module-with-gson-serialization/
+
+<br>
+
+---
+
+<br>
+
+## 📝 회고
