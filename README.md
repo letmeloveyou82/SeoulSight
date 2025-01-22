@@ -84,3 +84,51 @@
     <td colspan="2"><img src="https://github.com/user-attachments/assets/c6b9a6a3-97d2-4772-85b6-3c3d34fba3ab" alt="Image"></td>
   </tr>
 </table>
+
+
+## 트러블 슈팅
+주제 : 운영체제에 설치된 JDK-17로 Logstash 구동하기
+
+문제 : Logstash가 서브 프로세스들을 관리하기 위하여 JDK의 IO 서브 시스템에 대하여 open access권한을 요청하지만 JDK 버전의 문제로 IO 서브 시스템에 대한 접근이 제한되어 문제가 발생
+
+### JDK 16에서의 변화
+출처 : https://blogs.oracle.com/javakr/post/jdk-16
+
+JEP 396: JDK 내부를 강력하게 캡슐화  - JDK 9에서 내부 API를 강력하게 캡슐화하여 액세스 권한을 제한
+이로 인하여 open access권한이 제한됩니다. 이를 해결해주어야 Warning에 대한 문제가 사라집니다.
+
+```
+WARNING, using JAVA_HOME while Logstash distribution comes with a bundled JDK
+2025-01-21T17:34:36.483+09:00 [main] WARN FilenoUtil : Native subprocess control requires open access to the JDK IO subsystem
+Pass '--add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED' to enable.
+```
+![Image](https://github.com/user-attachments/assets/ac747e92-2754-4d2b-b851-6a7a8c508067)
+
+### 해결 과정
+파일 수정 - logstash 하단의 jvm.options 파일 수정
+```
+-Xmx1g 밑 부분에
+--add-opens java.base/sun.nio.ch=ALL-UNNAMED
+--add-opens java.base/java.io=ALL-UNNAMED
+를 추가해줍니다.
+
+첫번째 명령어는 module-info.java가 없는 모든 unnamed 모듈에서 JDK의 기본 모듈에서
+저수준 I/O관련 클래스들을 포함하고 있는 JAVA NIO 내부 구현과 관련된 패키지에 접근을 
+가능하게 해줍니다.
+두번째 명령어는 java.io패키지에 모든 unnamed 모듈이 접근 가능하도록 해줍니다.
+
+또한 ## GC configuration 밑 부분에 
+-XX:+IgnoreUnrecognizedVMOptions
+를 추가하여 혹여나 JVM 버전 차이로 인하여 인식하지 못하는 명령이 있을 경우 무시하는 옵션을
+추가합니다.
+```
+
+### 해결
+FilenoUtil에 대한 Openacess 권한 문제에 대한 내용이 해결되어 나타나지 않습니다.
+![Image](https://github.com/user-attachments/assets/1960d0b2-0dbd-462b-9f98-546ce40e0147)
+```
+C:\02.devEnv\ELK\logstash-7.11.1\bin>logstash -f ../config/test.conf
+Using JAVA_HOME defined java: C:\02.devEnv\jdk-17
+WARNING, using JAVA_HOME while Logstash distribution comes with a bundled JDK
+Sending Logstash logs to C:/02.devEnv/ELK/logstash-7.11.1/logs which is now configured via log4j2.properties
+```
