@@ -234,6 +234,9 @@ MySQL 데이터베이스의 place 테이블 데이터를 주기적으로 가져�
   <tr>
     <td colspan="2"><img src="https://github.com/user-attachments/assets/c6b9a6a3-97d2-4772-85b6-3c3d34fba3ab" alt="Image"></td>
   </tr>
+  <tr>
+    <td colspan="2"><img src="https://github.com/user-attachments/assets/6df98ab7-bff2-4868-9f8e-a6e889d8965f" alt="Image"></td>
+  </tr>
 </table>
 
 <br>
