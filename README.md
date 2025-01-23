@@ -1,4 +1,4 @@
-# SeoulSight
+# 🎆 SeoulSight
 <br>
 
 ## 목차
